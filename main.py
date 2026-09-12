@@ -124,7 +124,7 @@ def load_image_assets():
     mapping = {
         PearlState.IDLE: ["pearl_idle", "pearl_idle_state"],
         PearlState.FEEDING: ["pearl_eat", "pearl_feed", "pearl_feeding"],
-        PearlState.PLAYING: ["pearl_play", "pearl_playing"],
+        PearlState.PLAYING: ["pearl_weekend", "pearl_play", "pearl_playing"],
         PearlState.STUDYING: ["pearl_study", "pearl_studying"],
         PearlState.DISTRESSED: ["pearl_distressed", "pearl_distress"],
         "night": ["pearl_night"],
