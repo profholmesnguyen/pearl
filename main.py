@@ -260,6 +260,67 @@ def draw_status_bars(screen, font, pearl):
         screen.blit(shadow_surface, shadow_rect)
         screen.blit(val_surface, val_rect)
 
+def get_action_button_rects():
+    """
+    Returns a dict mapping action names ('feed', 'play', 'study') to their Pygame Rects.
+    Placed right alongside each status bar across the top header.
+    """
+    return {
+        "feed": pygame.Rect(252, 33, 30, 26),
+        "play": pygame.Rect(502, 33, 30, 26),
+        "study": pygame.Rect(752, 33, 30, 26),
+    }
+
+def draw_action_buttons(screen, mouse_pos):
+    """
+    Draws small clickable action buttons next to each status bar with icons only (no words).
+    Includes hover highlights.
+    """
+    button_rects = get_action_button_rects()
+    
+    button_configs = {
+        "feed": ((255, 140, 0), "feed"),
+        "play": ((230, 80, 180), "play"),
+        "study": ((80, 180, 250), "study"),
+    }
+    
+    for action, (accent_color, icon_type) in button_configs.items():
+        rect = button_rects[action]
+        is_hovered = rect.collidepoint(mouse_pos)
+        
+        # Background fill (brighter on hover)
+        bg_color = (65, 75, 95) if is_hovered else (24, 28, 38)
+        pygame.draw.rect(screen, bg_color, rect, border_radius=6)
+        
+        # Border glow
+        border_color = (255, 255, 255) if is_hovered else accent_color
+        pygame.draw.rect(screen, border_color, rect, width=2 if is_hovered else 1, border_radius=6)
+        
+        # Icon Centered inside the 30x26 button
+        cx, cy = rect.centerx, rect.centery
+        
+        if icon_type == "feed":
+            # Small Meat drumstick icon inside 30x26 button
+            pygame.draw.ellipse(screen, (255, 140, 0), (cx - 7, cy - 6, 12, 11))
+            pygame.draw.rect(screen, (240, 240, 220), (cx + 2, cy - 2, 6, 5), border_radius=1)
+            pygame.draw.ellipse(screen, (240, 240, 220), (cx + 6, cy - 4, 4, 4))
+            pygame.draw.ellipse(screen, (240, 240, 220), (cx + 6, cy, 4, 4))
+            
+        elif icon_type == "play":
+            # Small Heart icon inside 30x26 button
+            pygame.draw.circle(screen, (230, 80, 180), (cx - 4, cy - 3), 4)
+            pygame.draw.circle(screen, (230, 80, 180), (cx + 4, cy - 3), 4)
+            pygame.draw.polygon(screen, (230, 80, 180), [(cx - 8, cy - 2), (cx + 8, cy - 2), (cx, cy + 6)])
+            
+        elif icon_type == "study":
+            # Small Open Book icon inside 30x26 button
+            pygame.draw.polygon(screen, (80, 180, 250), [(cx - 7, cy - 5), (cx - 1, cy - 7), (cx - 1, cy + 5), (cx - 7, cy + 3)])
+            pygame.draw.polygon(screen, (80, 180, 250), [(cx + 1, cy - 7), (cx + 7, cy - 5), (cx + 7, cy + 3), (cx + 1, cy + 5)])
+            pygame.draw.line(screen, (245, 245, 250), (cx - 5, cy - 3), (cx - 2, cy - 4), width=1)
+            pygame.draw.line(screen, (245, 245, 250), (cx - 5, cy), (cx - 2, cy - 1), width=1)
+            pygame.draw.line(screen, (245, 245, 250), (cx + 2, cy - 4), (cx + 5, cy - 3), width=1)
+            pygame.draw.line(screen, (245, 245, 250), (cx + 2, cy - 1), (cx + 5, cy), width=1)
+
 def draw_bottom_dialogue_box(screen, font, pearl):
     """
     Draws a black rectangle at the bottom of the screen to display in-game text messages.
@@ -300,11 +361,21 @@ def main():
 
     while running:
         dt = clock.tick(30) / 1000.0  # 30 FPS tick
+        mouse_pos = pygame.mouse.get_pos()
 
         # Process PyGame Events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:  # Left click
+                    btn_rects = get_action_button_rects()
+                    if btn_rects["feed"].collidepoint(event.pos):
+                        pearl.feed()
+                    elif btn_rects["play"].collidepoint(event.pos):
+                        pearl.play()
+                    elif btn_rects["study"].collidepoint(event.pos):
+                        pearl.study()
             elif event.type == pygame.KEYDOWN:
                 if event.key in (pygame.K_1, pygame.K_KP1):
                     pearl.feed()
@@ -323,8 +394,9 @@ def main():
         # Clear background (Warm Cozy Room Background)
         screen.fill((45, 50, 62))
 
-        # 1. Draw Top Horizontal Status Bars (Hunger, Happiness, Grades)
+        # 1. Draw Top Horizontal Status Bars & Action Buttons
         draw_status_bars(screen, main_font, pearl)
+        draw_action_buttons(screen, mouse_pos)
 
         # 2. Draw Center Canvas & Current Pearl Rectangular Image Frame
         current_frames = get_current_pearl_frames(pearl, image_assets)
