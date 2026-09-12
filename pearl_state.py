@@ -116,10 +116,19 @@ class Pearl:
         self.anim_tick_timer = 0.0
         self.anim_frame = 0
         
-        # Update stats
-        self.happiness = min(100, self.happiness + 20)
+        # Update stats (capped strictly at 100% max)
+        if self.happiness < 100:
+            needed = 100 - self.happiness
+            self.happiness += min(20, needed)
+            if self.happiness >= 100:
+                self.current_message = f"Tossed a ball for {self.name}! She reached 100% happiness!"
+            else:
+                self.current_message = f"Tossed a ball for {self.name}!"
+        else:
+            self.happiness = 100
+            self.current_message = f"Pearl is already at 100% happiness and loving playtime!"
+            
         self.hunger = max(0, self.hunger - 5)
-        self.current_message = f"Tossed a ball for {self.name}!"
         return True
 
     def study(self):
@@ -132,10 +141,19 @@ class Pearl:
         self.anim_tick_timer = 0.0
         self.anim_frame = 0
         
-        # Update stats
-        self.grades = min(100, self.grades + 15)
+        # Update stats (capped strictly at 100% max)
+        if self.grades < 100:
+            needed = 100 - self.grades
+            self.grades += min(15, needed)
+            if self.grades >= 100:
+                self.current_message = f"Hitting the books with {self.name}! She achieved a perfect 100% A+!"
+            else:
+                self.current_message = f"Hitting the books with {self.name}!"
+        else:
+            self.grades = 100
+            self.current_message = f"Pearl already has a 100% grade and is acing her classes!"
+            
         self.happiness = max(0, self.happiness - 3)
-        self.current_message = f"Hitting the books with {self.name}!"
         return True
 
     def update(self, dt: float):
