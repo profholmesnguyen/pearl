@@ -186,13 +186,14 @@ def draw_status_bars(screen, font, pearl):
     percentage numbers centered INSIDE the status bar, and critical red fill when < 30%.
     """
     # 3 Stat Configs (Stat Name, Value, Max Value, Normal Color, Icon Type, Icon X, Bar X)
+    # Spans full 760px width (X = 20 to X = 780) matching exact ends of bottom text bar
     stats = [
-        ("hunger", pearl.hunger, 100, (255, 140, 0), "hunger", 40, 72),
-        ("happiness", pearl.happiness, 100, (230, 80, 180), "happiness", 290, 322),
+        ("hunger", pearl.hunger, 100, (255, 140, 0), "hunger", 20, 52),
+        ("happiness", pearl.happiness, 100, (230, 80, 180), "happiness", 280, 312),
         ("grades", pearl.grades, 100, (80, 180, 250), "grades", 540, 572),
     ]
 
-    bar_width = 175
+    bar_width = 208
     bar_height = 26
     bar_top_y = 33
 
