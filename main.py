@@ -53,28 +53,28 @@ def load_video_frames(filepath, target_size=(230, 230), max_frames=150):
         print(f"Note: Install 'opencv-python' to parse video files ({filepath}): {e}")
         return []
 
-def make_circular_surface(surface, radius):
+def make_rounded_rect_surface(surface, target_size, border_radius=12):
     """
-    Applies a smooth circular mask to a square surface so JPEG image corners do not overflow UI rings.
+    Scales and clips a surface into a sleek rounded rectangle fitting the main viewport area.
     """
-    size = radius * 2
-    scaled = pygame.transform.smoothscale(surface, (size, size))
+    width, height = target_size
+    scaled = pygame.transform.smoothscale(surface, (width, height))
     if pygame.display.get_surface() is not None:
         scaled = scaled.convert_alpha()
     
-    mask = pygame.Surface((size, size), pygame.SRCALPHA)
-    pygame.draw.circle(mask, (255, 255, 255, 255), (radius, radius), radius)
+    mask = pygame.Surface((width, height), pygame.SRCALPHA)
+    pygame.draw.rect(mask, (255, 255, 255, 255), (0, 0, width, height), border_radius=border_radius)
     
-    circular_surf = pygame.Surface((size, size), pygame.SRCALPHA)
-    circular_surf.blit(scaled, (0, 0))
-    circular_surf.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
-    return circular_surf
+    rounded_surf = pygame.Surface((width, height), pygame.SRCALPHA)
+    rounded_surf.blit(scaled, (0, 0))
+    rounded_surf.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+    return rounded_surf
 
-def load_asset_frames(basenames, target_size=(230, 230), crop_circle=True):
+def load_asset_frames(basenames, target_size=(466, 280), border_radius=12):
     """
     Tries loading frames for the first matching basename in `basenames`.
     Checks extensions: .mp4, .mov, .gif, .png, .jpg, .jpeg, .webp (case-insensitive).
-    Applies circular cropping for static images.
+    Scales images to rectangular space with rounded corners.
     """
     if isinstance(basenames, str):
         basenames = [basenames]
@@ -100,10 +100,8 @@ def load_asset_frames(basenames, target_size=(230, 230), crop_circle=True):
                             img = pygame.image.load(filepath)
                             if pygame.display.get_surface() is not None:
                                 img = img.convert_alpha()
-                            scaled_img = pygame.transform.smoothscale(img, target_size)
-                            if crop_circle:
-                                scaled_img = make_circular_surface(scaled_img, target_size[0] // 2)
-                            frames = [scaled_img]
+                            rounded_img = make_rounded_rect_surface(img, target_size, border_radius=border_radius)
+                            frames = [rounded_img]
                         except Exception as e:
                             print(f"Warning: Could not load image {filepath}: {e}")
                     
@@ -111,9 +109,9 @@ def load_asset_frames(basenames, target_size=(230, 230), crop_circle=True):
                         return frames
     return None
 
-def create_fallback_surface(target_size=(230, 230)):
+def create_fallback_surface(target_size=(466, 280)):
     surf = pygame.Surface(target_size, pygame.SRCALPHA)
-    pygame.draw.circle(surf, (100, 100, 100), (target_size[0] // 2, target_size[1] // 2), target_size[0] // 2)
+    pygame.draw.rect(surf, (60, 65, 80), (0, 0, target_size[0], target_size[1]), border_radius=12)
     return surf
 
 def load_image_assets():
@@ -134,10 +132,10 @@ def load_image_assets():
         "eat_full": ["pearl_eat_full", "pearl_feed_full", "pearl_full"],
     }
     
-    target_size = (230, 230)
+    target_size = (466, 280)
 
     for key, basenames in mapping.items():
-        frames = load_asset_frames(basenames, target_size=target_size, crop_circle=True)
+        frames = load_asset_frames(basenames, target_size=target_size, border_radius=12)
         if frames:
             assets[key] = frames
 
@@ -325,18 +323,21 @@ def main():
         # 1. Draw Top Horizontal Status Bars (Hunger, Happiness, Grades)
         draw_status_bars(screen, main_font, pearl)
 
-        # 2. Draw Center Canvas & Current Pearl Animation Sprite Image (Supports GIFs and PNGs)
+        # 2. Draw Center Canvas & Current Pearl Rectangular Image Frame
         current_frames = get_current_pearl_frames(pearl, image_assets)
         current_sprite = current_frames[pearl.anim_frame % len(current_frames)]
-        sprite_rect = current_sprite.get_rect(center=(SCREEN_WIDTH // 2, 218))
         
-        # Center canvas glow / background ring (Red alert if distressed)
-        ring_bg = (80, 25, 25) if pearl.state == PearlState.DISTRESSED else (35, 40, 50)
-        pygame.draw.circle(screen, ring_bg, (SCREEN_WIDTH // 2, 218), 120)
-        if pearl.state == PearlState.DISTRESSED:
-            pygame.draw.circle(screen, (220, 60, 60), (SCREEN_WIDTH // 2, 218), 120, width=3)
+        # Center rectangular card position (Y center = 215)
+        sprite_rect = current_sprite.get_rect(center=(SCREEN_WIDTH // 2, 215))
 
+        # Background card frame & border (Red alert if distressed, sleek dark slate container otherwise)
+        card_bg_color = (80, 25, 25) if pearl.state == PearlState.DISTRESSED else (25, 28, 36)
+        card_border_color = (220, 60, 60) if pearl.state == PearlState.DISTRESSED else (90, 100, 120)
+
+        bg_card_rect = sprite_rect.inflate(8, 8)
+        pygame.draw.rect(screen, card_bg_color, bg_card_rect, border_radius=14)
         screen.blit(current_sprite, sprite_rect)
+        pygame.draw.rect(screen, card_border_color, bg_card_rect, width=2, border_radius=14)
 
         # 3. Draw Bottom Black Dialogue Box (In-game text only)
         draw_bottom_dialogue_box(screen, main_font, pearl)
