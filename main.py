@@ -160,7 +160,7 @@ def get_current_pearl_frames(pearl, image_assets):
             return image_assets[PearlState.IDLE]
 
     elif pearl.state == PearlState.FEEDING:
-        if pearl.hunger >= 125 and "eat_full" in image_assets:
+        if pearl.hunger > 100 and "eat_full" in image_assets:
             return image_assets["eat_full"]
         elif PearlState.FEEDING in image_assets:
             return image_assets[PearlState.FEEDING]
