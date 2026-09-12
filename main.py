@@ -187,7 +187,7 @@ def draw_status_bars(screen, font, pearl):
     """
     # 3 Stat Configs (Stat Name, Value, Max Value, Normal Color, Icon Type, Icon X, Bar X)
     stats = [
-        ("hunger", pearl.hunger, 125, (255, 140, 0), "hunger", 40, 72),
+        ("hunger", pearl.hunger, 100, (255, 140, 0), "hunger", 40, 72),
         ("happiness", pearl.happiness, 100, (230, 80, 180), "happiness", 290, 322),
         ("grades", pearl.grades, 100, (80, 180, 250), "grades", 540, 572),
     ]
@@ -196,7 +196,10 @@ def draw_status_bars(screen, font, pearl):
     bar_height = 26
     bar_top_y = 33
 
-    for stat_name, value, max_val, normal_color, icon_type, icon_x, start_x in stats:
+    for stat_name, raw_val, max_val, normal_color, icon_type, icon_x, start_x in stats:
+        # Visually cap percentage display at 100% max
+        display_val = min(100, max(0, int(raw_val)))
+
         # 1. Draw Graphical Icon
         if icon_type == "hunger":
             # Meat drumstick icon
@@ -228,7 +231,7 @@ def draw_status_bars(screen, font, pearl):
             pygame.draw.line(screen, (100, 110, 140), (icon_x + 14, 44), (icon_x + 18, 44), width=1)
 
         # 2. Determine Bar Fill Color (Turns RED if critical < 30%)
-        is_critical = value < 30
+        is_critical = display_val < 30
         fill_color = (235, 55, 55) if is_critical else normal_color
 
         # 3. Progress Bar Outer Background
@@ -236,7 +239,7 @@ def draw_status_bars(screen, font, pearl):
         pygame.draw.rect(screen, (15, 18, 24), bar_bg_rect, border_radius=8)
 
         # 4. Progress Bar Inner Fill
-        fill_width = int((value / max_val) * bar_width)
+        fill_width = min(bar_width, int((display_val / max_val) * bar_width))
         if fill_width > 0:
             fill_rect = pygame.Rect(start_x, bar_top_y, fill_width, bar_height)
             pygame.draw.rect(screen, fill_color, fill_rect, border_radius=8)
@@ -246,7 +249,7 @@ def draw_status_bars(screen, font, pearl):
         pygame.draw.rect(screen, border_color, bar_bg_rect, width=2 if is_critical else 1, border_radius=8)
 
         # 6. Percentage Text Centered INSIDE the Status Bar
-        text_str = f"{value}%"
+        text_str = f"{display_val}%"
         val_surface = font.render(text_str, True, (255, 255, 255))
         val_rect = val_surface.get_rect(center=bar_bg_rect.center)
         
