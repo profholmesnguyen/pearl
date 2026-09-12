@@ -122,14 +122,14 @@ def load_image_assets():
     assets = {}
     
     mapping = {
-        PearlState.IDLE: ["pearl_idle", "pearl_idle_state"],
-        PearlState.FEEDING: ["pearl_eat", "pearl_feed", "pearl_feeding"],
-        PearlState.PLAYING: ["pearl_weekend", "pearl_play", "pearl_playing"],
-        PearlState.STUDYING: ["pearl_study", "pearl_studying"],
-        PearlState.DISTRESSED: ["pearl_distressed", "pearl_distress"],
+        PearlState.IDLE: ["pearl_idle"],
+        PearlState.FEEDING: ["pearl_eat"],
+        PearlState.PLAYING: ["pearl_play"],
+        PearlState.STUDYING: ["pearl_study"],
+        PearlState.DISTRESSED: ["pearl_distressed"],
         "night": ["pearl_night"],
         "weekend": ["pearl_weekend"],
-        "eat_full": ["pearl_eat_full", "pearl_feed_full", "pearl_full"],
+        "eat_full": ["pearl_eat_full"],
     }
     
     target_size = (466, 280)
