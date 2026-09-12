@@ -160,7 +160,7 @@ def get_current_pearl_frames(pearl, image_assets):
             return image_assets[PearlState.IDLE]
 
     elif pearl.state == PearlState.FEEDING:
-        if pearl.hunger >= 100 and "eat_full" in image_assets:
+        if pearl.hunger >= 125 and "eat_full" in image_assets:
             return image_assets["eat_full"]
         elif PearlState.FEEDING in image_assets:
             return image_assets[PearlState.FEEDING]
@@ -187,7 +187,7 @@ def draw_status_bars(screen, font, pearl):
     """
     # 3 Stat Configs (Stat Name, Value, Max Value, Normal Color, Icon Type, Icon X, Bar X)
     stats = [
-        ("hunger", pearl.hunger, 100, (255, 140, 0), "hunger", 40, 72),
+        ("hunger", pearl.hunger, 125, (255, 140, 0), "hunger", 40, 72),
         ("happiness", pearl.happiness, 100, (230, 80, 180), "happiness", 290, 322),
         ("grades", pearl.grades, 100, (80, 180, 250), "grades", 540, 572),
     ]

@@ -88,16 +88,18 @@ class Pearl:
         self.anim_tick_timer = 0.0
         self.anim_frame = 0
         
-        # Overfeeding check: If Hunger is already 100%, Pearl loses Happiness (Joy)
-        if self.hunger >= 100:
+        # Overfeeding check: Allow hunger up to 125%; trigger 'too full' overfed state at >= 125%
+        new_hunger = self.hunger + 25
+        if new_hunger >= 125 or self.hunger >= 125:
+            self.hunger = min(125, max(self.hunger, new_hunger))
             self.happiness = max(0, self.happiness - 10)
             self.current_message = f"Pearl is stuffed and too full to eat! Overfeeding reduced her happiness."
+        elif new_hunger >= 100:
+            self.hunger = new_hunger
+            self.current_message = f"Offered a meal to {self.name}! She is full and content."
         else:
-            self.hunger = min(100, self.hunger + 25)
-            if self.hunger >= 100:
-                self.current_message = f"Offered a meal to {self.name}! She is full and content."
-            else:
-                self.current_message = f"Offered a meal to {self.name}!"
+            self.hunger = new_hunger
+            self.current_message = f"Offered a meal to {self.name}!"
         return True
 
     def play(self):
@@ -211,7 +213,7 @@ class Pearl:
 
     def _update_activity_message(self):
         if self.state == PearlState.FEEDING:
-            if self.hunger >= 100:
+            if self.hunger >= 125:
                 messages = [
                     f"*groans* Pearl holds her stuffed belly...",
                     f"Too full! Pearl turns her head away from the food...",
