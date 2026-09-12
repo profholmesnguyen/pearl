@@ -345,11 +345,16 @@ def draw_bottom_dialogue_box(screen, font, pearl):
 
 def main():
     pygame.init()
+    try:
+        pygame.key.stop_text_input()
+    except AttributeError:
+        pass
 
-    # Viewport matching 800 x 480 pixels display
+    # Viewport matching 800 x 480 pixels display (FULLSCREEN hides Pi top nav bar)
     SCREEN_WIDTH = 800
     SCREEN_HEIGHT = 480
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    flags = pygame.FULLSCREEN | pygame.SCALED
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags)
     pygame.display.set_caption("Pearl the Jaguar - Virtual Pet")
 
     clock = pygame.time.Clock()
