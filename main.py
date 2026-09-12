@@ -263,19 +263,24 @@ def draw_status_bars(screen, font, pearl):
 def get_action_button_rects():
     """
     Returns a dict mapping action names ('feed', 'play', 'study') to their Pygame Rects.
-    Placed right alongside each status bar across the top header.
+    Stacked vertically along the right hand side of the screen.
     """
     return {
-        "feed": pygame.Rect(252, 33, 30, 26),
-        "play": pygame.Rect(502, 33, 30, 26),
-        "study": pygame.Rect(752, 33, 30, 26),
+        "feed": pygame.Rect(734, 120, 42, 42),
+        "play": pygame.Rect(734, 194, 42, 42),
+        "study": pygame.Rect(734, 268, 42, 42),
     }
 
 def draw_action_buttons(screen, mouse_pos):
     """
-    Draws small clickable action buttons next to each status bar with icons only (no words).
-    Includes hover highlights.
+    Draws a vertical panel on the right hand side of the screen containing small
+    clickable action buttons with icons only (no words). Includes hover highlights.
     """
+    # Outer vertical panel container on right side of screen
+    panel_rect = pygame.Rect(726, 105, 58, 220)
+    pygame.draw.rect(screen, (18, 22, 30), panel_rect, border_radius=12)
+    pygame.draw.rect(screen, (55, 65, 85), panel_rect, width=1, border_radius=12)
+
     button_rects = get_action_button_rects()
     
     button_configs = {
@@ -289,37 +294,37 @@ def draw_action_buttons(screen, mouse_pos):
         is_hovered = rect.collidepoint(mouse_pos)
         
         # Background fill (brighter on hover)
-        bg_color = (65, 75, 95) if is_hovered else (24, 28, 38)
-        pygame.draw.rect(screen, bg_color, rect, border_radius=6)
+        bg_color = (65, 75, 95) if is_hovered else (28, 34, 46)
+        pygame.draw.rect(screen, bg_color, rect, border_radius=8)
         
         # Border glow
         border_color = (255, 255, 255) if is_hovered else accent_color
-        pygame.draw.rect(screen, border_color, rect, width=2 if is_hovered else 1, border_radius=6)
+        pygame.draw.rect(screen, border_color, rect, width=2 if is_hovered else 1, border_radius=8)
         
-        # Icon Centered inside the 30x26 button
+        # Icon Centered inside the 42x42 button
         cx, cy = rect.centerx, rect.centery
         
         if icon_type == "feed":
-            # Small Meat drumstick icon inside 30x26 button
-            pygame.draw.ellipse(screen, (255, 140, 0), (cx - 7, cy - 6, 12, 11))
-            pygame.draw.rect(screen, (240, 240, 220), (cx + 2, cy - 2, 6, 5), border_radius=1)
-            pygame.draw.ellipse(screen, (240, 240, 220), (cx + 6, cy - 4, 4, 4))
-            pygame.draw.ellipse(screen, (240, 240, 220), (cx + 6, cy, 4, 4))
+            # Meat drumstick icon inside 42x42 button
+            pygame.draw.ellipse(screen, (255, 140, 0), (cx - 10, cy - 9, 17, 15))
+            pygame.draw.rect(screen, (240, 240, 220), (cx + 3, cy - 3, 9, 7), border_radius=2)
+            pygame.draw.ellipse(screen, (240, 240, 220), (cx + 9, cy - 6, 6, 6))
+            pygame.draw.ellipse(screen, (240, 240, 220), (cx + 9, cy, 6, 6))
             
         elif icon_type == "play":
-            # Small Heart icon inside 30x26 button
-            pygame.draw.circle(screen, (230, 80, 180), (cx - 4, cy - 3), 4)
-            pygame.draw.circle(screen, (230, 80, 180), (cx + 4, cy - 3), 4)
-            pygame.draw.polygon(screen, (230, 80, 180), [(cx - 8, cy - 2), (cx + 8, cy - 2), (cx, cy + 6)])
+            # Heart icon inside 42x42 button
+            pygame.draw.circle(screen, (230, 80, 180), (cx - 6, cy - 4), 6)
+            pygame.draw.circle(screen, (230, 80, 180), (cx + 6, cy - 4), 6)
+            pygame.draw.polygon(screen, (230, 80, 180), [(cx - 12, cy - 3), (cx + 12, cy - 3), (cx, cy + 9)])
             
         elif icon_type == "study":
-            # Small Open Book icon inside 30x26 button
-            pygame.draw.polygon(screen, (80, 180, 250), [(cx - 7, cy - 5), (cx - 1, cy - 7), (cx - 1, cy + 5), (cx - 7, cy + 3)])
-            pygame.draw.polygon(screen, (80, 180, 250), [(cx + 1, cy - 7), (cx + 7, cy - 5), (cx + 7, cy + 3), (cx + 1, cy + 5)])
-            pygame.draw.line(screen, (245, 245, 250), (cx - 5, cy - 3), (cx - 2, cy - 4), width=1)
-            pygame.draw.line(screen, (245, 245, 250), (cx - 5, cy), (cx - 2, cy - 1), width=1)
-            pygame.draw.line(screen, (245, 245, 250), (cx + 2, cy - 4), (cx + 5, cy - 3), width=1)
-            pygame.draw.line(screen, (245, 245, 250), (cx + 2, cy - 1), (cx + 5, cy), width=1)
+            # Open Book icon inside 42x42 button
+            pygame.draw.polygon(screen, (80, 180, 250), [(cx - 11, cy - 7), (cx - 2, cy - 10), (cx - 2, cy + 7), (cx - 11, cy + 4)])
+            pygame.draw.polygon(screen, (80, 180, 250), [(cx + 2, cy - 10), (cx + 11, cy - 7), (cx + 11, cy + 4), (cx + 2, cy + 7)])
+            pygame.draw.line(screen, (245, 245, 250), (cx - 8, cy - 4), (cx - 4, cy - 5), width=2)
+            pygame.draw.line(screen, (245, 245, 250), (cx - 8, cy + 1), (cx - 4, cy), width=2)
+            pygame.draw.line(screen, (245, 245, 250), (cx + 4, cy - 5), (cx + 8, cy - 4), width=2)
+            pygame.draw.line(screen, (245, 245, 250), (cx + 4, cy), (cx + 8, cy + 1), width=2)
 
 def draw_bottom_dialogue_box(screen, font, pearl):
     """
